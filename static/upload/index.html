@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>LetsTalk</title>
+</head>
+
+<body>
+    <div class="container d-none">
+        <div class="my-5 mx-auto text-center">
+            <button class="btn btn-dark btn-lg" data-toggle="modal" data-target="#startModal">Open</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="startModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Hello, welcome to Flack!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="contact-form">
+                        <div class="form-group">
+                            <p>Please type username to start chating.</p>
+                            <input id="user-input" class="form-control" name="username" required type="text"
+                                placeholder="Your username">
+                            <button id="start-btn" class="btn btn-success mt-2">Start</button>
+                        </div>
+                    </div>
+
+                    <div class="username-alert alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Please fill the blank.</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="user-exists-alert alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Sorry, this username already exist.</strong>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="container d-none">
+        <div class="my-5 mx-auto text-center">
+            <button class="btn btn-dark btn-lg" data-toggle="modal" data-target="#change-username-form">Open</button>
+        </div>
+    </div> -->
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light elem-blur">
+        <a class="navbar-brand" href="#">
+            <i class="fad fa-icons"></i> Flack
+        </a>
+        <div class="form-inline my-2 my-lg-0">
+            <button id="user-btn" class="btn btn-1 btn-primary my-2 my-sm-0"></button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        </div>
+    </nav>
+
+    <div id="main-div" class="container-fluid wrapper elem-blur">
+        <div id="channels-div" class="menu">
+            <button class="menu-btn btn "><i class="fas fa-ellipsis-v"></i></button>
+            <!-- {#        <nav class="menu-list">#}
+            {#            <a>Test</a>#}
+            {#            <a id="test">Test</a>#}
+            {#            <a>Test</a>#}
+            {#            <a>Test</a>#}
+            {#        </nav>#} -->
+
+            <div class="all-channels">
+                <button class="add-public-channel btn"><i class="fas fa-plus-square"></i></button>
+                <h5>All channels</h5>
+                <div id="channel-input-wrapper" class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">#</div>
+                    </div>
+                    <input type="text" class="form-control" id="public-channel-input" placeholder="New channel">
+                </div>
+
+                <div id="all-channels">
+                    <h6 class="channel channel-active">#general</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="messages" class="text-center"></div>
+            <div class="typingUsers">
+                <img class="mr-2" src="{{ url_for('static', filename="typing.gif") }}">
+                <span id="typingUsersText"></span>
+            </div>
+            <div class="files">
+                <button id="close-files" type="button" class="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+                <img id="load-img" width="30px" src="{{ url_for('static', filename="loading.gif") }}">
+
+                <div class="docs"></div>
+            </div>
+
+            <div class="input-wrapper">
+                <div id="message-input" class="form-group d-flex justify-content-center">
+                    <button class="attach-btn form-control btn btn-outline-primary text-center">
+                        <div class="image-upload">
+                            <label for="file-input">
+                                <i class="fas fa-paperclip"></i>
+                            </label>
+
+                            <input id="file-input" type="file" multiple />
+                        </div>
+                    </button>
+                    <input id="message" class="form-control" type="text" placeholder="Your message">
+                    <button class="send-btn form-control btn btn-outline-primary text-center"><i
+                            class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <script src='https://cdn.rawgit.com/admsev/jquery-play-sound/master/jquery.playSound.js'></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DES"];
+            let height = window.innerHeight - 56;
+            $("#main-div").css("height", height);
+            height -= 64;
+            $("#messages").css("height", height);
+
+
+
+            localStorage.clear();
+
+            if (!localStorage.getItem("currentChannel")) {
+                localStorage.setItem("currentChannel", "#general");
+            }
+
+            if (!localStorage.getItem("username") || localStorage.getItem("username") === "") {
+                $("#startModal").modal({
+                    backdrop: "static",
+                    keyboard: false
+                });
+            } else {
+                $("#user-btn").html(localStorage.getItem("username"));
+            }
+
+            var socket = io.connect("/");
+
+            // $('#startModal').modal('show');
+
+            $("#start-btn").on("click", function () {
+
+                if ($("#user-input").prop("value") === "") {
+                    $(".username-alert").css("display", "block");
+                } else {
+                    const req = new XMLHttpRequest();
+                    req.open("POST", '/usercheck');
+
+                    req.onload = () => {
+                        const data = JSON.parse(req.responseText);
+
+                        if (!data.exists) {
+                            $(".username-alert").css("display", "none");
+                            localStorage.setItem("username", $("#user-input").val());
+                            $("#user-btn").html(localStorage.getItem("username"));
+                            $("#startModal").modal("hide");
+
+                            let date = new Date();
+                            let day = date.getDate();
+                            let month = months[date.getMonth()];
+                            let hours = date.getHours();
+                            let mins = date.getMinutes();
+                            if (mins / 10 < 1) {
+                                date = `${day} ${month}    ${hours}:0${mins}`;
+                            } else {
+                                date = `${day} ${month}    ${hours}:${mins}`;
+                            }
+
+                            socket.emit("send message", {
+                                "connection": true,
+                                "channel": localStorage.getItem("currentChannel"),
+                                "username": localStorage.getItem("username"),
+                                "date": date
+                            });
+                        } else {
+                            $(".user-exists-alert").css("display", "block");
+                        }
+                    }
+
+                    const data = new FormData();
+                    data.append('username', $("#user-input").val());
+
+                    req.send(data);
+                }
+            });
+
+            socket.on("connect", function () {
+                let date = new Date();
+                let day = date.getDate();
+                let month = months[date.getMonth()];
+                let hours = date.getHours();
+                let mins = date.getMinutes();
+                if (mins / 10 < 1) {
+                    date = `${day} ${month}    ${hours}:0${mins}`;
+                } else {
+                    date = `${day} ${month}    ${hours}:${mins}`;
+                }
+
+                socket.emit("send message", {
+                    "connection": true,
+                    "channel": localStorage.getItem("currentChannel"),
+                    "username": localStorage.getItem("username"),
+                    "date": date
+                });
+
+                socket.emit("get all channels", {
+                    "username": localStorage.getItem("username")
+                });
+            });
+
+            socket.on("channel added", function (msg) {
+                // console.log("msg['channel']", msg["channel"])
+                if (msg["channel"] !== "#general") {
+                    $("#all-channels").append(`<h6 class="channel">${msg["channel"]}</h6>`);
+                }
+            });
+
+            socket.on("channels", function (msg) {
+                $("#all-channels").html(`<h6 class="channel">#general</h6>`);
+
+                msg["channels"].forEach(function (channel) {
+                    if (channel !== "#general") {
+                        $("#all-channels").append(`<h6 class="channel">${channel}</h6>`);
+                    }
+                });
+
+                $("h6").each(function () {
+                    if ($(this).html() == localStorage.getItem("currentChannel")) {
+                        $(this).addClass("channel-active");
+                    }
+                });
+
+                socket.emit("get channel story", {
+                    "channel": localStorage.getItem("currentChannel"),
+                    "username": localStorage.getItem("username")
+                });
+            });
+
+            socket.on("announce message", function (msg) {
+                if (msg["channel"] && msg["channel"] != localStorage.getItem("currentChannel")) {
+                    let audio = new Audio("{{ url_for('static', filename='notification.mp3') }}");
+                    audio.play();
+                    return;
+                }
+
+                if (!document.hasFocus()) {
+                    if (msg["username"] && msg["username"] !== localStorage.getItem("username")) {
+                        let audio = new Audio("{{ url_for('static', filename='notification.mp3') }}");
+                        audio.play()
+                    }
+                }
+
+                if (msg["messages"]) {
+                    if (msg["messages"][0] && msg["messages"][0]["channel"] == localStorage.getItem(
+                            "currentChannel")) {
+                        $("#messages").html("");
+                    }
+                    messages = msg["messages"];
+                    messages.forEach(function (msg_) {
+                        if (msg_["channel"] == localStorage.getItem("currentChannel")) {
+                            if (msg_["connection"]) {
+                                console.log('msg_["connection"] ===', msg_["connection"])
+                                $("#messages").append(
+                                    `<div class="row msg-row justify-content-center"><div class="msg-connect">
+                                                    <p><b>${msg_['username']}</b> ${msg_['text']}<span class="message-date">${msg_['date']}</span></p></div></div>`
+                                );
+                            } else {
+                                let files_html = "<div class='msg-files'>"
+                                for (let filename in msg_["files"]) {
+                                    if ($.inArray(filename.split('.').pop().toLowerCase(), [
+                                            'png', 'jpg', 'jpeg', 'gif', 'svg'
+                                        ]) != -1) {
+                                        files_html +=
+                                            `<p><a href="${encodeURI(msg_['files'][filename])}" target="_blank"><img class="msg-image" src="${encodeURI(msg_['files'][filename])}" alt="${filename}"></a></p>`;
+                                    } else if ($.inArray(filename.split('.').pop()
+                                            .toLowerCase(), ['mov', 'avi', 'mp4', 'webm']) != -
+                                        1) {
+                                        files_html +=
+                                            `<div class="text-center"><video width="80%" controls><source src="${encodeURI(msg_['files'][filename])}" type="video/mp4">Your browser does not support the video tag.</video></div>`;
+                                    } else {
+                                        files_html +=
+                                            `<p><a href="${encodeURI(msg_['files'][filename])}" target="_blank"><i class="fas fa-file-alt"></i> ${filename}</a></p>`;
+                                    }
+                                }
+
+                                files_html += "</div>";
+                                if (msg_["username"] == localStorage.getItem("username")) {
+                                    $("#messages").append(
+                                        `<div class="row msg-row justify-content-end"><div class="message-wrapper">
+                                                    <p><b>${msg_['username']}</b><span class="message-date">${msg_['date']}</span></p>${msg_['text']}${files_html}</div></div>`
+                                    );
+                                } else {
+                                    $("#messages").append(
+                                        `<div class="row msg-row"><div class="message-wrapper msg-other">
+                                                    <p><b>${msg_['username']}</b><span class="message-date">${msg_['date']}</span></p>${msg_['text']}${files_html}</div></div>`
+                                    );
+                                }
+                            }
+                        }
+                    });
+                } else if (msg["connection"]) {
+                    console.log('msg connection nih ==', msg["connection"]);
+                    $("#messages").append(
+                        `<div class="row msg-row justify-content-center"><div class="msg-connect">
+                                                    <p><b>${msg['username']}</b> ${msg['text']}<span class="message-date">${msg['date']}</span></p></div></div>`
+                    );
+                } else {
+                    console.log('hmmm msg channel ==', msg['channel']);
+                    let files_html = "<div class='msg-files'>";
+                    for (let filename in msg["files"]) {
+                        if ($.inArray(filename.split('.').pop().toLowerCase(), ['png', 'jpg', 'jpeg',
+                                'gif', 'svg'
+                            ]) != -1) {
+                            files_html +=
+                                `<p><a href="${encodeURI(msg['files'][filename])}" target="_blank"><img class="msg-image" src="${encodeURI(msg['files'][filename])}" alt="${filename}"></a></p>`;
+                        } else if ($.inArray(filename.split('.').pop().toLowerCase(), ['mov', 'avi',
+                                'mp4', 'webm'
+                            ]) != -1) {
+                            files_html +=
+                                `<div class="text-center"><video width="80%" controls><source src="${encodeURI(msg['files'][filename])}" type="video/mp4">Your browser does not support the video tag.</video></div>`;
+                        } else {
+                            files_html +=
+                                `<p><a href="${encodeURI(msg['files'][filename])}" target="_blank"><i class="fas fa-file-alt"></i> ${filename}</a></p>`;
+                        }
+                    }
+
+                    files_html += "</div>";
+                    if (msg["username"] == localStorage.getItem("username")) {
+                        $("#messages").append(
+                            `<div class="row msg-row justify-content-end"><div class="message-wrapper">
+                                                    <p><b>${msg['username']}</b><span class="message-date">${msg['date']}</span></p>${msg['text']}${files_html}</div></div>`
+                        );
+                    } else {
+                        $("#messages").append(
+                            `<div class="row msg-row"><div class="message-wrapper msg-other">
+                                                    <p><b>${msg['username']}</b><span class="message-date">${msg['date']}</span></p>${msg['text']}${files_html}</div></div>`
+                        );
+                    }
+                }
+
+                let objDiv = document.getElementById("messages");
+                objDiv.scrollTop = objDiv.scrollHeight;
+
+            });
+
+            let file_counter = 0;
+            let countr = 0;
+            let numOfFiles = 0;
+            let filenames = [];
+            let Upload = function (file) {
+                this.file = file;
+            };
+
+            Upload.prototype.getType = function () {
+                return this.file.type;
+            };
+
+            Upload.prototype.getSize = function () {
+                return this.file.size;
+            };
+
+            Upload.prototype.getName = function () {
+                return this.file.name;
+            };
+
+            Upload.prototype.doUpload = function () {
+                let that = this;
+                let formData = new FormData();
+
+                formData.append("file", this.file, this.getName());
+                formData.append("upload_file", true);
+
+                $.ajax({
+                    type: "POST",
+                    url: "/send_file",
+                    xhr: function () {
+                        let myXhr = $.ajaxSettings.xhr();
+                        if (myXhr.upload) {
+                            myXhr.upload.addEventListener("progress", that.progressHandling,
+                                false);
+                        }
+                        return myXhr;
+                    },
+                    success: function (data) {
+                        console.log(data["success"]);
+                        file_counter++;
+
+                        if (file_counter == numOfFiles) {
+                            let user = localStorage.getItem("username");
+                            let date = new Date();
+                            let day = date.getDate();
+                            let month = months[date.getMonth()];
+                            let hours = date.getHours();
+                            let mins = date.getMinutes();
+
+                            if (mins / 10 < 1) {
+                                date = `${day} ${month}  ${hours}:0${mins}`;
+                            } else {
+                                date = `${day} ${month}  ${hours}:${mins}`;
+                            }
+
+                            socket.emit("send message", {
+                                "username": localStorage.getItem("username"),
+                                "text": $("#message").val(),
+                                "date": date,
+                                "channel": localStorage.getItem("currentChannel"),
+                                "files": filenames
+                            });
+
+                            $("#message").val('');
+                            $("#file-input").val(null);
+                            $(".files").css("display", "none");
+                            $(".docs").html("");
+                            $("#load-img").css("display", "none");
+
+                        }
+                    },
+
+                    error: function (error) {
+                        //handle error
+                    },
+
+                    async: true,
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    timeout: 60000
+                });
+            };
+
+            Upload.prototype.progressHandling = function (event) {
+                let percent = 0;
+                let position = event.loaded || event.position;
+                let total = event.total;
+                let progress_bar_id = "#progress-wrp";
+                if (event.lengthComputable) {
+                    percent = Math.ceil(position / total * 100);
+                }
+
+                $(progress_bar_id + " .progress-bar").css("width", +percent + "%");
+                $(progress_bar_id + " .status").text(percent + "%");
+            };
+
+            $(".send-btn").on("click", function () {
+                let message = $("#message").val();
+                let files = $("#file-input").val();
+                if (files) {
+                    filenames = [];
+                    numOfFiles = $("#file-input").get(0).files.length;
+                    file_counter = 0;
+                    for (let i = 0; i < $("#file-input").get(0).files.length; ++i) {
+                        let file = $("#file-input")[0].files[i];
+                        let upload = new Upload(file);
+                        upload.doUpload();
+                        filenames.push(file.name);
+                    }
+                    $("#load-img").css("display", "block");
+                } else if (message === "") {
+                    return;
+                } else {
+                    let user = localStorage.getItem("username");
+                    let date = new Date();
+                    let day = date.getDate();
+                    let month = months[date.getMonth()];
+                    let hours = date.getHours();
+                    let mins = date.getMinutes();
+
+                    if (mins / 10 < 1) {
+                        date = `${day} ${month}  ${hours}:0${mins}`;
+                    } else {
+                        date = `${day} ${month}  ${hours}:${mins}`;
+                    }
+
+                    socket.emit("send message", {
+                        "username": localStorage.getItem("username"),
+                        "text": $("#message").val(),
+                        "date": date,
+                        "channel": localStorage.getItem("currentChannel"),
+                        "files": []
+                    });
+
+                    $("#message").val('');
+                }
+            });
+
+            $("#message").keyup(function (e) {
+                let code = e.which;
+                if (code == 13) {
+                    let message = $("#message").val();
+                    let files = $("#file-input").val();
+                    filenames = [];
+                    if (files) {
+                        numOfFiles = $("#file-input").get(0).files.length;
+                        file_counter = 0;
+                        for (let i = 0; i < $("#file-input").get(0).files.length; ++i) {
+                            let file = $("#file-input")[0].files[i];
+                            let upload = new Upload(file);
+                            upload.doUpload();
+                            filenames.push(file.name);
+                        }
+
+                        $("#load-img").css("display", "block");
+                    } else if (message === "") {
+                        return;
+                    } else {
+                        let user = localStorage.getItem("username");
+                        let date = new Date();
+                        let day = date.getDate();
+                        let month = months[date.getMonth()];
+                        let hours = date.getHours();
+                        let mins = date.getMinutes();
+
+                        if (mins / 10 < 1) {
+                            date = `${day} ${month}  ${hours}:0${mins}`;
+                        } else {
+                            date = `${day} ${month}  ${hours}:${mins}`;
+                        }
+
+                        socket.emit("send message", {
+                            "username": localStorage.getItem("username"),
+                            "text": $("#message").val(),
+                            "date": date,
+                            "channel": localStorage.getItem("currentChannel"),
+                            "files": []
+                        });
+
+                        $("#message").val('');
+                    }
+                }
+            });
+
+            $(".menu-btn").on("click", function (e) {
+                e.preventDefault();
+                $(".menu").toggleClass("menu_active");
+                $(".content").toggleClass("content_active");
+            });
+
+            $("#file-input").change(function () {
+                $(".files").css("display", "block");
+                $(".docs").html("");
+                let names = [];
+                for (let i = 0; i < $(this).get(0).files.length; ++i) {
+                    names.push($(this).get(0).files[i].name);
+                    $(".docs").append(
+                        `<p><i class="fas fa-file-upload"></i> ${$(this).get(0).files[i].name}</p>`);
+                }
+            });
+
+            $("#close-files").click(function () {
+                $(".docs").html("");
+                $("#file-input").val(null);
+                $(".files").css("display", "none");
+            });
+
+            $("#all-channels").on("click", "h6", function (e) {
+                if (!$(this).hasClass("channel-active")) {
+                    $(".channel-active").removeClass("channel-active");
+                    $(this).addClass("channel-active");
+                    localStorage.setItem("currentChannel", $(this).html());
+
+                    let date = new Date();
+                    let day = date.getDate();
+                    let month = months[date.getMonth()];
+                    let hours = date.getHours();
+                    let mins = date.getMinutes();
+
+                    if (mins / 10 < 1) {
+                        date = `${day} ${month}  ${hours}:0${mins}`;
+                    } else {
+                        date = `${day} ${month}  ${hours}:${mins}`;
+                    }
+
+                    socket.emit("send message", {
+                        "connection": true,
+                        "channel": localStorage.getItem("currentChannel"),
+                        "username": localStorage.getItem("username"),
+                        "date": date
+                    });
+
+                    socket.emit("get channel story", {
+                        "channel": localStorage.getItem("currentChannel"),
+                        "username": localStorage.getItem("username")
+                    });
+                }
+
+                if ($(".menu-btn").css("display") != "none") {
+                    $(".menu").toggleClass("menu_active");
+                    $(".content").toggleClass("content_active");
+                }
+                e.preventDefault();
+            });
+
+            $(".add-public-channel").click(function () {
+                if ($("#public-channel-input").val() == "") {
+                    return;
+                }
+
+                let channel = "#" + $("#public-channel-input").val();
+                $("#public-channel-input").val("");
+
+                socket.emit("add channel", {
+                    "channel": channel
+                });
+            });
+
+            $("#public-channel-input").keyup(function (e) {
+                let code = e.which;
+                if (code == 13) {
+                    if ($("#public-channel-input").val() == "") {
+                        return;
+                    }
+                    let channel = "#" + $("#public-channel-input").val();
+                    $("#public-channel-input").val("");
+
+                    socket.emit("add channel", {
+                        "channel": channel
+                    });
+                }
+            });
+
+            document.addEventListener("touchstart", handleTouchStart, false);
+            document.addEventListener("touchmove", handleTouchMove, false);
+
+            let xDown = null;
+            let yDown = null;
+
+            function getTouches(evt) {
+                return evt.touches || evt.originalEvent.touches;
+            }
+
+            function handleTouchStart(evt) {
+                const firstTouch = getTouches(evt)[0];
+                xDown = firstTouch.clientX;
+                yDown = firstTouch.clientY;
+            };
+
+            function handleTouchMove(evt) {
+                if (!xDown || !yDown) {
+                    return;
+                }
+
+                let xUp = evt.touches[0].clientX;
+                let yUp = evt.touches[0].clientY;
+
+                let xDiff = xDown - xUp;
+                let yDiff = yDown - yUp;
+
+                if (Math.abs(xDiff) > Math.abs(yDiff)) {
+                    if (xDiff > 0) {
+                        if ($(".menu-btn").css("display") != "none") {
+                            $(".menu").toggleClass("menu-active");
+                            $(".content").toggleClass("content_active");
+                        }
+                    } else {
+                        if ($(".menu-btn").css("display") != "none") {
+                            $(".menu").toggleClass("menu-active");
+                            $(".content").toggleClass("content_active");
+                        }
+                    }
+                    //????
+                }
+                xDown = null;
+                yDown = null;
+            };
+
+        });
+    </script>
+
+</body>
+
+</html>
